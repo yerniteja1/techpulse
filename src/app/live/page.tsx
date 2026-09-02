@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { ArticleCard } from "@/components/news/ArticleCard";
 import { ArticleGrid } from "@/components/news/ArticleGrid";
+import { ArticleGridSkeleton } from "@/components/ui/Skeleton";
 import type { Article } from "@/types/article";
 import type { ApiResponse } from "@/types/api";
 
@@ -55,9 +55,7 @@ export default function LivePage() {
       </div>
 
       {loading ? (
-        <div className="flex h-64 items-center justify-center text-gray-400">
-          Loading...
-        </div>
+        <ArticleGridSkeleton count={6} />
       ) : (
         <ArticleGrid articles={articles} />
       )}

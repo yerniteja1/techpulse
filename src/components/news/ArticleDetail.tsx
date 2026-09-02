@@ -1,7 +1,8 @@
+import { memo } from "react";
 import type { Article } from "@/types/article";
 import { ShareButton } from "@/components/ui/ShareButton";
 
-export function ArticleDetail({ article }: { article: Article }) {
+function ArticleDetailInner({ article }: { article: Article }) {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
   const slug = article.title
     .toLowerCase()
@@ -46,6 +47,8 @@ export function ArticleDetail({ article }: { article: Article }) {
             src={article.urlToImage}
             alt={article.title}
             className="h-full w-full object-cover"
+            width={1200}
+            height={675}
           />
         </div>
       )}
@@ -76,3 +79,5 @@ export function ArticleDetail({ article }: { article: Article }) {
     </article>
   );
 }
+
+export const ArticleDetail = memo(ArticleDetailInner);

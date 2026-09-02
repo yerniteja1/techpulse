@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import { memo } from "react";
 import type { Article } from "@/types/article";
 
 function timeAgo(dateStr: string): string {
@@ -15,7 +16,13 @@ function timeAgo(dateStr: string): string {
   return `${days}d ago`;
 }
 
-export function ArticleCard({ article }: { article: Article }) {
+function ArticleCardInner({
+  article,
+  priority = false,
+}: {
+  article: Article;
+  priority?: boolean;
+}) {
   const slug = article.title
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
@@ -34,6 +41,7 @@ export function ArticleCard({ article }: { article: Article }) {
             alt={article.title}
             fill
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            priority={priority}
             className="object-cover transition-transform group-hover:scale-105"
           />
         ) : (
@@ -64,3 +72,5 @@ export function ArticleCard({ article }: { article: Article }) {
     </Link>
   );
 }
+
+export const ArticleCard = memo(ArticleCardInner);

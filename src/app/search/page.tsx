@@ -1,13 +1,12 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { useRouter } from "next/navigation";
 import { ArticleGrid } from "@/components/news/ArticleGrid";
+import { ArticleGridSkeleton } from "@/components/ui/Skeleton";
 import type { Article } from "@/types/article";
 import type { ApiResponse } from "@/types/api";
 
 export default function SearchPage() {
-  const router = useRouter();
   const [query, setQuery] = useState("");
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(false);
@@ -65,9 +64,7 @@ export default function SearchPage() {
       </form>
 
       {loading ? (
-        <div className="flex h-64 items-center justify-center text-gray-400">
-          Searching...
-        </div>
+        <ArticleGridSkeleton count={6} />
       ) : searched && articles.length === 0 ? (
         <div className="flex h-64 items-center justify-center text-gray-400">
           No results found for &ldquo;{query}&rdquo;
