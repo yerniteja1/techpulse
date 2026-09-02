@@ -39,7 +39,7 @@ export default async function ArticlePage({ params }: Props) {
       <ArticleJsonLd
         title={article.title}
         description={article.description || undefined}
-        image={article.urlToImage || undefined}
+        image={article.image || undefined}
         datePublished={article.publishedAt}
         author={article.author || undefined}
         url={`${siteUrl}/article/${slug}`}

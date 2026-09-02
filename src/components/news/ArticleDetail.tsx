@@ -58,11 +58,11 @@ function ArticleDetailInner({ article }: { article: Article }) {
         )}
       </header>
 
-      {article.urlToImage ? (
+      {article.image ? (
         <div className="relative mb-8 aspect-video w-full overflow-hidden rounded-lg bg-gray-100">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={article.urlToImage}
+            src={article.image}
             alt={article.title}
             className="h-full w-full object-cover"
             width={1200}

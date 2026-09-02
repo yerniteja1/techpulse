@@ -1,44 +1,47 @@
 import {
-  NewsResponseSchema,
+  GNewsResponseSchema,
   type NewsResponse,
   type Category,
   type Article,
 } from "@/types/article";
 
-const NEWS_API_BASE = "https://newsapi.org/v2";
+const GNEWS_API_BASE = "https://gnews.io/api/v4";
 
-const API_KEY = process.env.NEWS_API_KEY;
+const API_KEY = process.env.GNEWS_API_KEY;
 
 if (!API_KEY) {
-  throw new Error("NEWS_API_KEY environment variable is required");
+  throw new Error("GNEWS_API_KEY environment variable is required");
 }
 
-const CATEGORY_QUERIES: Record<Category, string> = {
+const CATEGORY_MAP: Record<Category, string> = {
   technology: "technology",
-  "artificial-intelligence": "artificial intelligence OR AI OR machine learning",
-  startups: "startups OR venture capital OR funding",
-  cybersecurity: "cybersecurity OR data breach OR hacking",
+  "artificial-intelligence": "artificial intelligence",
+  startups: "startups",
+  cybersecurity: "cybersecurity",
 };
 
 function buildUrl(
-  endpoint: "top-headlines" | "everything",
+  endpoint: "top-headlines" | "search",
   params: Record<string, string>
 ): string {
-  const url = new URL(`${NEWS_API_BASE}/${endpoint}`);
-  url.searchParams.set("apiKey", API_KEY!);
+  const url = new URL(`${GNEWS_API_BASE}/${endpoint}`);
+  url.searchParams.set("apikey", API_KEY!);
   for (const [key, value] of Object.entries(params)) {
     url.searchParams.set(key, value);
   }
   return url.toString();
 }
 
-function validateResponse(data: unknown): NewsResponse {
-  const result = NewsResponseSchema.safeParse(data);
+function mapToNewsResponse(data: unknown): NewsResponse {
+  const result = GNewsResponseSchema.safeParse(data);
   if (!result.success) {
-    console.error("[NewsAPI] Validation error:", result.error.flatten());
-    throw new Error("Invalid response from NewsAPI");
+    console.error("[GNews] Validation error:", result.error.flatten());
+    throw new Error("Invalid response from GNews API");
   }
-  return result.data;
+  return {
+    totalResults: result.data.totalArticles,
+    articles: result.data.articles,
+  };
 }
 
 export async function fetchTopHeadlines(options: {
@@ -46,12 +49,11 @@ export async function fetchTopHeadlines(options: {
   pageSize?: number;
   country?: string;
 }): Promise<NewsResponse> {
-  const { page = 1, pageSize = 20, country = "us" } = options;
+  const { pageSize = 20 } = options;
 
   const params: Record<string, string> = {
-    country,
-    page: String(page),
-    pageSize: String(pageSize),
+    category: "technology",
+    max: String(pageSize),
   };
 
   const url = buildUrl("top-headlines", params);
@@ -61,12 +63,12 @@ export async function fetchTopHeadlines(options: {
 
   if (!res.ok) {
     const text = await res.text();
-    console.error(`[NewsAPI] HTTP ${res.status}:`, text);
-    throw new Error(`NewsAPI request failed: ${res.status}`);
+    console.error(`[GNews] HTTP ${res.status}:`, text);
+    throw new Error(`GNews request failed: ${res.status}`);
   }
 
   const data = await res.json();
-  return validateResponse(data);
+  return mapToNewsResponse(data);
 }
 
 export async function fetchByCategory(options: {
@@ -74,13 +76,26 @@ export async function fetchByCategory(options: {
   page?: number;
   pageSize?: number;
 }): Promise<NewsResponse> {
-  const { category, page = 1, pageSize = 20 } = options;
+  const { category, pageSize = 20 } = options;
 
-  return fetchEverything({
-    query: CATEGORY_QUERIES[category],
-    page,
-    pageSize,
+  const params: Record<string, string> = {
+    q: CATEGORY_MAP[category],
+    max: String(pageSize),
+  };
+
+  const url = buildUrl("search", params);
+  const res = await fetch(url, {
+    next: { revalidate: 300 },
   });
+
+  if (!res.ok) {
+    const text = await res.text();
+    console.error(`[GNews] HTTP ${res.status}:`, text);
+    throw new Error(`GNews request failed: ${res.status}`);
+  }
+
+  const data = await res.json();
+  return mapToNewsResponse(data);
 }
 
 export async function fetchEverything(options: {
@@ -89,29 +104,26 @@ export async function fetchEverything(options: {
   pageSize?: number;
   sortBy?: "relevancy" | "popularity" | "publishedAt";
 }): Promise<NewsResponse> {
-  const { query, page = 1, pageSize = 20, sortBy = "publishedAt" } = options;
+  const { query, pageSize = 20 } = options;
 
   const params: Record<string, string> = {
     q: query,
-    page: String(page),
-    pageSize: String(pageSize),
-    sortBy,
-    language: "en",
+    max: String(pageSize),
   };
 
-  const url = buildUrl("everything", params);
+  const url = buildUrl("search", params);
   const res = await fetch(url, {
     next: { revalidate: 300 },
   });
 
   if (!res.ok) {
     const text = await res.text();
-    console.error(`[NewsAPI] HTTP ${res.status}:`, text);
-    throw new Error(`NewsAPI request failed: ${res.status}`);
+    console.error(`[GNews] HTTP ${res.status}:`, text);
+    throw new Error(`GNews request failed: ${res.status}`);
   }
 
   const data = await res.json();
-  return validateResponse(data);
+  return mapToNewsResponse(data);
 }
 
 export async function fetchArticleById(articleId: string): Promise<Article | null> {

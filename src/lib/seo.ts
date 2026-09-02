@@ -30,13 +30,13 @@ export function generateArticleMetadata(article: Article): Metadata {
       description: article.description || undefined,
       type: "article",
       publishedTime: article.publishedAt,
-      images: article.urlToImage ? [{ url: article.urlToImage }] : [],
+      images: article.image ? [{ url: article.image }] : [],
     },
     twitter: {
       card: "summary_large_image",
       title: article.title,
       description: article.description || undefined,
-      images: article.urlToImage ? [article.urlToImage] : [],
+      images: article.image ? [article.image] : [],
     },
   };
 }
@@ -47,7 +47,7 @@ export function generateArticleJsonLd(article: Article) {
     "@type": "NewsArticle",
     headline: article.title,
     description: article.description,
-    image: article.urlToImage,
+    image: article.image,
     datePublished: article.publishedAt,
     author: article.author
       ? { "@type": "Person", name: article.author }
