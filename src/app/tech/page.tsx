@@ -4,14 +4,14 @@ import type { Metadata } from "next";
 import type { Article } from "@/types/article";
 
 export const metadata: Metadata = {
-  title: "TechPulse — Latest Tech News",
-  description: "Stay up to date with the latest technology news",
+  title: "Tech News",
+  description: "Latest technology news and trends",
 };
 
-export default async function HomePage() {
+export default async function TechPage() {
   let articles: Article[] = [];
   try {
-    const data = await fetchTopHeadlines({ pageSize: 12 });
+    const data = await fetchTopHeadlines({ category: "technology", pageSize: 12 });
     articles = data.articles;
   } catch {
     articles = [];
@@ -20,9 +20,9 @@ export default async function HomePage() {
   return (
     <div className="mx-auto max-w-6xl px-4 py-8">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold tracking-tight">Top Stories</h1>
+        <h1 className="text-2xl font-bold tracking-tight">Technology</h1>
         <p className="mt-1 text-sm text-gray-500">
-          Latest technology news from around the web
+          Hardware, software, and industry news
         </p>
       </div>
       <ArticleGrid articles={articles} />

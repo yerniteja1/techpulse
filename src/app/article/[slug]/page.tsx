@@ -1,0 +1,38 @@
+import { fetchEverything } from "@/lib/newsapi";
+import { ArticleDetail } from "@/components/news/ArticleDetail";
+import type { Metadata } from "next";
+
+type Props = {
+  params: Promise<{ slug: string }>;
+};
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params;
+  const title = slug
+    .split("-")
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(" ");
+  return { title };
+}
+
+export default async function ArticlePage({ params }: Props) {
+  const { slug } = await params;
+
+  let article;
+  try {
+    const result = await fetchEverything({ query: slug, pageSize: 1 });
+    article = result.articles[0] ?? null;
+  } catch {
+    article = null;
+  }
+
+  if (!article) {
+    return (
+      <div className="flex h-96 items-center justify-center text-gray-400">
+        Article not found.
+      </div>
+    );
+  }
+
+  return <ArticleDetail article={article} />;
+}
