@@ -5,6 +5,10 @@ import { logger } from "@/lib/logger";
 import type { ApiResponse } from "@/types/api";
 import type { NewsResponse } from "@/types/article";
 
+const CACHE_HEADERS = {
+  "Cache-Control": "public, s-maxage=300, stale-while-revalidate=600",
+};
+
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const page = Number(searchParams.get("page") || "1");
@@ -15,11 +19,14 @@ export async function GET(request: NextRequest) {
   const cached = getCached<NewsResponse>(cacheKey);
   if (cached) {
     logger.debug("Cache hit", { cacheKey });
-    return NextResponse.json<ApiResponse<NewsResponse>>({
-      success: true,
-      data: cached,
-      timestamp: new Date().toISOString(),
-    });
+    return NextResponse.json<ApiResponse<NewsResponse>>(
+      {
+        success: true,
+        data: cached,
+        timestamp: new Date().toISOString(),
+      },
+      { headers: CACHE_HEADERS }
+    );
   }
 
   try {
@@ -31,11 +38,14 @@ export async function GET(request: NextRequest) {
 
     setCache(cacheKey, data, CACHE_TTL.headlines);
 
-    return NextResponse.json<ApiResponse<NewsResponse>>({
-      success: true,
-      data,
-      timestamp: new Date().toISOString(),
-    });
+    return NextResponse.json<ApiResponse<NewsResponse>>(
+      {
+        success: true,
+        data,
+        timestamp: new Date().toISOString(),
+      },
+      { headers: CACHE_HEADERS }
+    );
   } catch (error) {
     logger.error("Failed to fetch news", {
       error: error instanceof Error ? error.message : String(error),
