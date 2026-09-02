@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { ArticleGrid } from "@/components/news/ArticleGrid";
 import { ArticleGridSkeleton } from "@/components/ui/Skeleton";
 import type { Article } from "@/types/article";
@@ -11,26 +11,29 @@ export default function LivePage() {
   const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
-  const fetchArticles = useCallback(async () => {
-    try {
-      const res = await fetch("/api/news?pageSize=12");
-      const json: ApiResponse<{ articles: Article[] }> = await res.json();
-      if (json.success && json.data) {
-        setArticles(json.data.articles);
-        setLastUpdated(new Date());
-      }
-    } catch (err) {
-      console.error("Failed to fetch live feed:", err);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
   useEffect(() => {
-    fetchArticles();
-    const interval = setInterval(fetchArticles, 15000);
-    return () => clearInterval(interval);
-  }, [fetchArticles]);
+    let cancelled = false;
+    async function load() {
+      try {
+        const res = await fetch("/api/news?pageSize=12");
+        const json: ApiResponse<{ articles: Article[] }> = await res.json();
+        if (!cancelled && json.success && json.data) {
+          setArticles(json.data.articles);
+          setLastUpdated(new Date());
+        }
+      } catch (err) {
+        console.error("Failed to fetch live feed:", err);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+    load();
+    const interval = setInterval(load, 15000);
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+    };
+  }, []);
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8">

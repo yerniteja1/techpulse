@@ -1,12 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { revalidatePath } from "next/cache";
-import { clearCache } from "@/lib/cache";
+import { revalidateTag } from "next/cache";
 import { logger } from "@/lib/logger";
 import type { ApiResponse } from "@/types/api";
 
 export async function POST(request: NextRequest) {
   const body = await request.json().catch(() => ({}));
-  const { path, secret } = body as { path?: string; secret?: string };
+  const { secret } = body as { secret?: string };
 
   if (secret !== process.env.REVALIDATION_SECRET) {
     return NextResponse.json<ApiResponse<never>>(
@@ -23,13 +22,8 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    if (path) {
-      revalidatePath(path);
-      logger.info("Revalidated path", { path });
-    } else {
-      clearCache();
-      logger.info("Cleared all caches");
-    }
+    revalidateTag("news", "max");
+    logger.info("Cleared news cache via revalidateTag");
 
     return NextResponse.json<ApiResponse<{ revalidated: boolean }>>({
       success: true,

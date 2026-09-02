@@ -1,4 +1,3 @@
-import Link from "next/link";
 import Image from "next/image";
 import { memo } from "react";
 import type { Article } from "@/types/article";
@@ -59,6 +58,18 @@ function ArticleCardInner({
     .replace(/(^-|-$)/g, "")
     .slice(0, 100);
 
+  const articleData = Buffer.from(
+    JSON.stringify({
+      t: article.title,
+      d: article.description,
+      i: article.image,
+      u: article.url,
+      p: article.publishedAt,
+      s: article.source.name,
+      c: article.content,
+    })
+  ).toString("base64");
+
   const isNew = isNewArticle(article.publishedAt);
   const initials = article.title
     .split(" ")
@@ -68,8 +79,8 @@ function ArticleCardInner({
     .toUpperCase();
 
   return (
-    <Link
-      href={`/article/${slug}`}
+    <a
+      href={`/article/${slug}?d=${encodeURIComponent(articleData)}`}
       className="group flex flex-col overflow-hidden rounded-lg border border-gray-200 bg-white transition-shadow hover:shadow-md"
     >
       <div className="relative aspect-video w-full bg-gray-100">
@@ -118,7 +129,7 @@ function ArticleCardInner({
           </p>
         )}
       </div>
-    </Link>
+    </a>
   );
 }
 

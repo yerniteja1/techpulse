@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { fetchEverything } from "@/lib/newsapi";
-import { getCached, setCache, CACHE_TTL } from "@/lib/cache";
 import { logger } from "@/lib/logger";
 import type { ApiResponse } from "@/types/api";
 import type { Article } from "@/types/article";
@@ -11,17 +10,6 @@ export async function GET(
 ) {
   const { id } = await params;
   const decodedId = decodeURIComponent(id);
-
-  const cacheKey = `article:${decodedId}`;
-  const cached = getCached<Article>(cacheKey);
-  if (cached) {
-    logger.debug("Cache hit", { cacheKey });
-    return NextResponse.json<ApiResponse<Article>>({
-      success: true,
-      data: cached,
-      timestamp: new Date().toISOString(),
-    });
-  }
 
   try {
     logger.info("Fetching article", { id: decodedId });
@@ -46,8 +34,6 @@ export async function GET(
         { status: 404 }
       );
     }
-
-    setCache(cacheKey, article, CACHE_TTL.article);
 
     return NextResponse.json<ApiResponse<Article>>({
       success: true,

@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { fetchByCategory } from "@/lib/newsapi";
-import { getCached, setCache, CACHE_TTL } from "@/lib/cache";
 import { logger } from "@/lib/logger";
 import type { ApiResponse } from "@/types/api";
 import type { NewsResponse, Category } from "@/types/article";
@@ -37,22 +36,10 @@ export async function GET(
   const page = Number(searchParams.get("page") || "1");
   const pageSize = Number(searchParams.get("pageSize") || "20");
 
-  const cacheKey = `news:cat:${category}:${page}:${pageSize}`;
-  const cached = getCached<NewsResponse>(cacheKey);
-  if (cached) {
-    logger.debug("Cache hit", { cacheKey });
-    return NextResponse.json<ApiResponse<NewsResponse>>({
-      success: true,
-      data: cached,
-      timestamp: new Date().toISOString(),
-    });
-  }
-
   try {
     logger.info("Fetching category news", { category, page, pageSize });
 
     const data = await fetchByCategory({ category, page, pageSize });
-    setCache(cacheKey, data, CACHE_TTL.category);
 
     return NextResponse.json<ApiResponse<NewsResponse>>({
       success: true,
