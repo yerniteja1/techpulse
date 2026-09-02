@@ -6,6 +6,8 @@ import { WebsiteJsonLd } from "@/components/ui/StructuredData";
 import type { Metadata } from "next";
 import type { Article } from "@/types/article";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "TechPulse — Latest Tech News",
   description: "Stay up to date with the latest technology news",

@@ -3,6 +3,8 @@ import { ArticleGrid } from "@/components/news/ArticleGrid";
 import type { Metadata } from "next";
 import type { Article } from "@/types/article";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Startups & Venture",
   description: "Startup funding, launches, and venture capital news",
