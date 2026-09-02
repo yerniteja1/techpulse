@@ -15,6 +15,8 @@ export async function GET(request: NextRequest) {
   const pageSize = Number(searchParams.get("pageSize") || "20");
   const query = searchParams.get("q");
 
+  logger.info("API /news called", { page, pageSize, query });
+
   const cacheKey = `news:${query || "headlines"}:${page}:${pageSize}`;
   const cached = getCached<NewsResponse>(cacheKey);
   if (cached) {
@@ -49,6 +51,9 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     logger.error("Failed to fetch news", {
       error: error instanceof Error ? error.message : String(error),
+      page,
+      pageSize,
+      query,
     });
 
     return NextResponse.json<ApiResponse<never>>(
