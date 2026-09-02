@@ -1,7 +1,7 @@
 import { fetchTopHeadlines } from "@/lib/newsapi";
 import { BreakingNews } from "@/components/news/BreakingNews";
 import { CategoryPill } from "@/components/ui/CategoryPill";
-import { SearchFilter } from "@/components/ui/SearchFilter";
+import { HomeContent } from "@/components/news/HomeContent";
 import { WebsiteJsonLd } from "@/components/ui/StructuredData";
 import type { Metadata } from "next";
 import type { Article } from "@/types/article";
@@ -32,20 +32,18 @@ export default async function HomePage() {
       <WebsiteJsonLd />
       <BreakingNews />
       <div className="mx-auto max-w-6xl px-4 py-8">
-        <div className="mb-8 flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight">Top Stories</h1>
-            <p className="mt-1 text-sm text-gray-500">
-              Latest technology news from around the web
-            </p>
-          </div>
-          <SearchFilter initialArticles={articles} />
+        <div className="mb-8">
+          <h1 className="text-2xl font-bold tracking-tight">Top Stories</h1>
+          <p className="mt-1 text-sm text-gray-500">
+            Latest technology news from around the web
+          </p>
         </div>
         <div className="mb-6 flex flex-wrap gap-2">
           {CATEGORIES.map((cat) => (
             <CategoryPill key={cat} category={cat} />
           ))}
         </div>
+        <HomeContent initialArticles={articles} />
       </div>
     </>
   );
