@@ -22,8 +22,11 @@ export default async function HomePage() {
   let articles: Article[] = [];
   try {
     const data = await fetchTopHeadlines({ pageSize: 12 });
+    console.log("API KEY", process.env.NEWS_API_KEY);
+    console.log("data", data);
     articles = data.articles;
-  } catch {
+  } catch (error) {
+    console.error("[HomePage] Error fetching top headlines:", error);
     articles = [];
   }
 
