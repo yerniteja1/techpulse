@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { fetchTopHeadlines } from "@/lib/newsapi";
+import { fetchByCategory } from "@/lib/newsapi";
 import { getCached, setCache, CACHE_TTL } from "@/lib/cache";
 import { logger } from "@/lib/logger";
 import type { ApiResponse } from "@/types/api";
@@ -51,7 +51,7 @@ export async function GET(
   try {
     logger.info("Fetching category news", { category, page, pageSize });
 
-    const data = await fetchTopHeadlines({ category, page, pageSize });
+    const data = await fetchByCategory({ category, page, pageSize });
     setCache(cacheKey, data, CACHE_TTL.category);
 
     return NextResponse.json<ApiResponse<NewsResponse>>({

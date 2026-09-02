@@ -43,22 +43,17 @@ function validateResponse(data: unknown): NewsResponse {
 }
 
 export async function fetchTopHeadlines(options: {
-  category?: Category;
   page?: number;
   pageSize?: number;
   country?: string;
 }): Promise<NewsResponse> {
-  const { category, page = 1, pageSize = 20, country = "us" } = options;
+  const { page = 1, pageSize = 20, country = "us" } = options;
 
   const params: Record<string, string> = {
     country,
     page: String(page),
     pageSize: String(pageSize),
   };
-
-  if (category) {
-    params.q = CATEGORY_QUERIES[category];
-  }
 
   const url = buildUrl("top-headlines", params);
   const res = await fetch(url, {
@@ -73,6 +68,20 @@ export async function fetchTopHeadlines(options: {
 
   const data = await res.json();
   return validateResponse(data);
+}
+
+export async function fetchByCategory(options: {
+  category: Category;
+  page?: number;
+  pageSize?: number;
+}): Promise<NewsResponse> {
+  const { category, page = 1, pageSize = 20 } = options;
+
+  return fetchEverything({
+    query: CATEGORY_QUERIES[category],
+    page,
+    pageSize,
+  });
 }
 
 export async function fetchEverything(options: {

@@ -1,4 +1,4 @@
-import { fetchTopHeadlines } from "@/lib/newsapi";
+import { fetchByCategory } from "@/lib/newsapi";
 import { ArticleGrid } from "@/components/news/ArticleGrid";
 import type { Metadata } from "next";
 import type { Article } from "@/types/article";
@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 export default async function AIPage() {
   let articles: Article[] = [];
   try {
-    const data = await fetchTopHeadlines({ category: "artificial-intelligence", pageSize: 12 });
+    const data = await fetchByCategory({ category: "artificial-intelligence", pageSize: 12 });
     articles = data.articles;
   } catch {
     articles = [];
