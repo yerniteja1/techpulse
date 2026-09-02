@@ -1,4 +1,6 @@
-import { memo } from "react";
+"use client";
+
+import { memo, useState } from "react";
 import type { Article } from "@/types/article";
 import { ShareButton } from "@/components/ui/ShareButton";
 
@@ -21,6 +23,7 @@ function getImageColor(title: string): string {
 }
 
 function ArticleDetailInner({ article }: { article: Article }) {
+  const [imgError, setImgError] = useState(false);
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
   const slug = article.title
     .toLowerCase()
@@ -58,7 +61,7 @@ function ArticleDetailInner({ article }: { article: Article }) {
         )}
       </header>
 
-      {article.image ? (
+      {article.image && !imgError ? (
         <div className="relative mb-8 aspect-video w-full overflow-hidden rounded-lg bg-gray-100">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
@@ -67,6 +70,7 @@ function ArticleDetailInner({ article }: { article: Article }) {
             className="h-full w-full object-cover"
             width={1200}
             height={675}
+            onError={() => setImgError(true)}
           />
         </div>
       ) : (

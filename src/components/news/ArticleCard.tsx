@@ -1,5 +1,7 @@
+"use client";
+
 import Image from "next/image";
-import { memo } from "react";
+import { memo, useState } from "react";
 import type { Article } from "@/types/article";
 
 function timeAgo(dateStr: string): string {
@@ -52,6 +54,8 @@ function ArticleCardInner({
   article: Article;
   priority?: boolean;
 }) {
+  const [imgError, setImgError] = useState(false);
+
   const slug = article.title
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
@@ -84,7 +88,7 @@ function ArticleCardInner({
       className="group flex flex-col overflow-hidden rounded-lg border border-gray-200 bg-white transition-shadow hover:shadow-md"
     >
       <div className="relative aspect-video w-full bg-gray-100">
-        {article.image ? (
+        {article.image && !imgError ? (
           <Image
             src={article.image}
             alt={article.title}
@@ -92,6 +96,7 @@ function ArticleCardInner({
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             priority={priority}
             className="object-cover transition-transform group-hover:scale-105"
+            onError={() => setImgError(true)}
           />
         ) : (
           <div
