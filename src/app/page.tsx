@@ -1,5 +1,6 @@
 import { fetchTopHeadlines } from "@/lib/newsapi";
 import { ArticleGrid } from "@/components/news/ArticleGrid";
+import { BreakingNews } from "@/components/news/BreakingNews";
 import { CategoryPill } from "@/components/ui/CategoryPill";
 import { WebsiteJsonLd } from "@/components/ui/StructuredData";
 import type { Metadata } from "next";
@@ -29,6 +30,7 @@ export default async function HomePage() {
   return (
     <>
       <WebsiteJsonLd />
+      <BreakingNews />
       <div className="mx-auto max-w-6xl px-4 py-8">
         <div className="mb-8">
           <h1 className="text-2xl font-bold tracking-tight">Top Stories</h1>

@@ -16,6 +16,18 @@ function timeAgo(dateStr: string): string {
   return `${days}d ago`;
 }
 
+function readTime(content: string | null): string {
+  if (!content) return "1 min read";
+  const words = content.split(/\s+/).length;
+  const minutes = Math.max(1, Math.ceil(words / 200));
+  return `${minutes} min read`;
+}
+
+function isNewArticle(dateStr: string): boolean {
+  const diff = Date.now() - new Date(dateStr).getTime();
+  return diff < 30 * 60 * 1000; // less than 30 minutes
+}
+
 function ArticleCardInner({
   article,
   priority = false,
@@ -28,6 +40,8 @@ function ArticleCardInner({
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)/g, "")
     .slice(0, 100);
+
+  const isNew = isNewArticle(article.publishedAt);
 
   return (
     <Link
@@ -49,6 +63,11 @@ function ArticleCardInner({
             No image
           </div>
         )}
+        {isNew && (
+          <span className="absolute left-2 top-2 rounded bg-blue-600 px-1.5 py-0.5 text-[10px] font-bold uppercase text-white shadow-sm">
+            New
+          </span>
+        )}
       </div>
       <div className="flex flex-1 flex-col gap-2 p-4">
         <div className="flex items-center gap-2 text-xs text-gray-500">
@@ -59,6 +78,8 @@ function ArticleCardInner({
           <time dateTime={article.publishedAt}>
             {timeAgo(article.publishedAt)}
           </time>
+          <span>&middot;</span>
+          <span>{readTime(article.content)}</span>
         </div>
         <h2 className="line-clamp-2 text-base font-semibold leading-snug group-hover:text-blue-600">
           {article.title}
