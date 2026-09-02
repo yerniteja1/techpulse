@@ -1,8 +1,7 @@
 import { fetchTopHeadlines } from "@/lib/newsapi";
-import { ArticleGrid } from "@/components/news/ArticleGrid";
 import { BreakingNews } from "@/components/news/BreakingNews";
 import { CategoryPill } from "@/components/ui/CategoryPill";
-import { SearchOverlay } from "@/components/ui/SearchOverlay";
+import { SearchFilter } from "@/components/ui/SearchFilter";
 import { WebsiteJsonLd } from "@/components/ui/StructuredData";
 import type { Metadata } from "next";
 import type { Article } from "@/types/article";
@@ -40,14 +39,13 @@ export default async function HomePage() {
               Latest technology news from around the web
             </p>
           </div>
-          <SearchOverlay />
+          <SearchFilter initialArticles={articles} />
         </div>
         <div className="mb-6 flex flex-wrap gap-2">
           {CATEGORIES.map((cat) => (
             <CategoryPill key={cat} category={cat} />
           ))}
         </div>
-        <ArticleGrid articles={articles} />
       </div>
     </>
   );
