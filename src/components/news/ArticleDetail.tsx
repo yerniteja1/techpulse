@@ -2,6 +2,24 @@ import { memo } from "react";
 import type { Article } from "@/types/article";
 import { ShareButton } from "@/components/ui/ShareButton";
 
+function getImageColor(title: string): string {
+  const colors = [
+    "from-blue-500 to-blue-600",
+    "from-purple-500 to-purple-600",
+    "from-green-500 to-green-600",
+    "from-orange-500 to-orange-600",
+    "from-pink-500 to-pink-600",
+    "from-teal-500 to-teal-600",
+    "from-indigo-500 to-indigo-600",
+    "from-red-500 to-red-600",
+  ];
+  let hash = 0;
+  for (let i = 0; i < title.length; i++) {
+    hash = title.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return colors[Math.abs(hash) % colors.length];
+}
+
 function ArticleDetailInner({ article }: { article: Article }) {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
   const slug = article.title
@@ -40,7 +58,7 @@ function ArticleDetailInner({ article }: { article: Article }) {
         )}
       </header>
 
-      {article.urlToImage && (
+      {article.urlToImage ? (
         <div className="relative mb-8 aspect-video w-full overflow-hidden rounded-lg bg-gray-100">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
@@ -50,6 +68,21 @@ function ArticleDetailInner({ article }: { article: Article }) {
             width={1200}
             height={675}
           />
+        </div>
+      ) : (
+        <div
+          className={`mb-8 flex aspect-video w-full items-center justify-center rounded-lg bg-gradient-to-br ${getImageColor(
+            article.title
+          )}`}
+        >
+          <span className="text-6xl font-bold text-white/80">
+            {article.title
+              .split(" ")
+              .slice(0, 2)
+              .map((w) => w[0])
+              .join("")
+              .toUpperCase()}
+          </span>
         </div>
       )}
 

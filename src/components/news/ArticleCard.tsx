@@ -28,6 +28,24 @@ function isNewArticle(dateStr: string): boolean {
   return diff < 30 * 60 * 1000; // less than 30 minutes
 }
 
+function getImageColor(title: string): string {
+  const colors = [
+    "from-blue-500 to-blue-600",
+    "from-purple-500 to-purple-600",
+    "from-green-500 to-green-600",
+    "from-orange-500 to-orange-600",
+    "from-pink-500 to-pink-600",
+    "from-teal-500 to-teal-600",
+    "from-indigo-500 to-indigo-600",
+    "from-red-500 to-red-600",
+  ];
+  let hash = 0;
+  for (let i = 0; i < title.length; i++) {
+    hash = title.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return colors[Math.abs(hash) % colors.length];
+}
+
 function ArticleCardInner({
   article,
   priority = false,
@@ -42,6 +60,12 @@ function ArticleCardInner({
     .slice(0, 100);
 
   const isNew = isNewArticle(article.publishedAt);
+  const initials = article.title
+    .split(" ")
+    .slice(0, 2)
+    .map((w) => w[0])
+    .join("")
+    .toUpperCase();
 
   return (
     <Link
@@ -59,8 +83,12 @@ function ArticleCardInner({
             className="object-cover transition-transform group-hover:scale-105"
           />
         ) : (
-          <div className="flex h-full items-center justify-center text-sm text-gray-400">
-            No image
+          <div
+            className={`flex h-full w-full items-center justify-center bg-gradient-to-br ${getImageColor(
+              article.title
+            )}`}
+          >
+            <span className="text-3xl font-bold text-white/80">{initials}</span>
           </div>
         )}
         {isNew && (

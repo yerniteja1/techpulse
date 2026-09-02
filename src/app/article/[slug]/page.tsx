@@ -1,3 +1,4 @@
+import { notFound } from "next/navigation";
 import { fetchEverything } from "@/lib/newsapi";
 import { ArticleDetail } from "@/components/news/ArticleDetail";
 import { ArticleJsonLd, BreadcrumbJsonLd } from "@/components/ui/StructuredData";
@@ -28,11 +29,7 @@ export default async function ArticlePage({ params }: Props) {
   }
 
   if (!article) {
-    return (
-      <div className="flex h-96 items-center justify-center text-gray-400">
-        Article not found.
-      </div>
-    );
+    notFound();
   }
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
