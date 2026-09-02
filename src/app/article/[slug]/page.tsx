@@ -1,5 +1,6 @@
 import { fetchEverything } from "@/lib/newsapi";
 import { ArticleDetail } from "@/components/news/ArticleDetail";
+import { ArticleJsonLd, BreadcrumbJsonLd } from "@/components/ui/StructuredData";
 import type { Metadata } from "next";
 
 type Props = {
@@ -34,5 +35,25 @@ export default async function ArticlePage({ params }: Props) {
     );
   }
 
-  return <ArticleDetail article={article} />;
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+
+  return (
+    <>
+      <ArticleJsonLd
+        title={article.title}
+        description={article.description || undefined}
+        image={article.urlToImage || undefined}
+        datePublished={article.publishedAt}
+        author={article.author || undefined}
+        url={`${siteUrl}/article/${slug}`}
+      />
+      <BreadcrumbJsonLd
+        items={[
+          { name: "Home", url: siteUrl },
+          { name: "Article", url: `${siteUrl}/article/${slug}` },
+        ]}
+      />
+      <ArticleDetail article={article} />
+    </>
+  );
 }

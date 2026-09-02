@@ -1,6 +1,14 @@
 import type { Article } from "@/types/article";
+import { ShareButton } from "@/components/ui/ShareButton";
 
 export function ArticleDetail({ article }: { article: Article }) {
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+  const slug = article.title
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "")
+    .slice(0, 100);
+
   return (
     <article className="mx-auto max-w-3xl px-4 py-8">
       <header className="mb-8">
@@ -50,7 +58,7 @@ export function ArticleDetail({ article }: { article: Article }) {
         </div>
       )}
 
-      <div className="mt-8 border-t border-gray-200 pt-6">
+      <div className="mt-8 flex items-center gap-3 border-t border-gray-200 pt-6">
         <a
           href={article.url}
           target="_blank"
@@ -60,6 +68,10 @@ export function ArticleDetail({ article }: { article: Article }) {
           Read full article
           <span aria-hidden="true">&rarr;</span>
         </a>
+        <ShareButton
+          title={article.title}
+          url={`${siteUrl}/article/${slug}`}
+        />
       </div>
     </article>
   );
