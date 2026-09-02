@@ -1,7 +1,7 @@
 import { fetchTopHeadlines } from "@/lib/newsapi";
+import { ArticleGrid } from "@/components/news/ArticleGrid";
 import { BreakingNews } from "@/components/news/BreakingNews";
 import { CategoryPill } from "@/components/ui/CategoryPill";
-import { HomeContent } from "@/components/news/HomeContent";
 import { WebsiteJsonLd } from "@/components/ui/StructuredData";
 import type { Metadata } from "next";
 import type { Article } from "@/types/article";
@@ -43,7 +43,7 @@ export default async function HomePage() {
             <CategoryPill key={cat} category={cat} />
           ))}
         </div>
-        <HomeContent initialArticles={articles} />
+        <ArticleGrid articles={articles} />
       </div>
     </>
   );
